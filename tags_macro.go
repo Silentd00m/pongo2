@@ -113,9 +113,8 @@ func tagMacroParser(doc *Parser, start *Token, arguments *Parser) (INodeTag, *Er
 		}
 	}
 
-	if arguments.Match(TokenKeyword, "export") != nil {
-		macroNode.exported = true
-	}
+	// Always export macros.
+	macroNode.exported = true
 
 	if arguments.Remaining() > 0 {
 		return nil, arguments.Error("Malformed macro-tag.", nil)

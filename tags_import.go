@@ -21,7 +21,7 @@ func (node *tagImportNode) Execute(ctx *ExecutionContext, writer TemplateWriter)
 	return nil
 }
 
-func tagImportParser(doc *Parser, start *Token, arguments *Parser) (INodeTag, *Error) {
+func tagFromImportParser(doc *Parser, start *Token, arguments *Parser) (INodeTag, *Error) {
 	importNode := &tagImportNode{
 		position: start,
 		macros:   make(map[string]*tagMacroNode),
@@ -33,6 +33,11 @@ func tagImportParser(doc *Parser, start *Token, arguments *Parser) (INodeTag, *E
 	}
 
 	importNode.filename = doc.template.set.resolveFilename(doc.template, filenameToken.Val)
+
+	// Throw away the 'import' keyword
+	if arguments.Match(TokenIdentifier, "import") == nil {
+		return nil, arguments.Error("Expected keyword 'import'.", nil)
+	}
 
 	if arguments.Remaining() == 0 {
 		return nil, arguments.Error("You must at least specify one macro to import.", nil)
@@ -80,5 +85,5 @@ func tagImportParser(doc *Parser, start *Token, arguments *Parser) (INodeTag, *E
 }
 
 func init() {
-	RegisterTag("import", tagImportParser)
+	RegisterTag("from", tagFromImportParser)
 }
